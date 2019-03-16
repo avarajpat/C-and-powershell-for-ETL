@@ -1,0 +1,72 @@
+#region Help:  Introduction to the script task
+
+/* The scipt task makes use of the Microsoft.Officr.Interop.Excel library to 
+   interact with an excel spreadsheet and clean up the spreadsheet excluding the headers every run.
+*/
+#endregion
+
+
+#region Namespaces
+using System;
+using Microsoft.CSharp;
+using System.Data;
+using Microsoft.SqlServer.Dts.Runtime;
+using System.Windows.Forms;
+using Excel =   Microsoft.Office.Interop.Excel;
+#endregion
+
+namespace ST_4cda85d9d37947b994d9e212d4ff5703
+{
+   
+		public void Main()
+		{
+            try {
+                // TODO: Add your code here
+                Excel.Workbook MyBook = null;
+                Excel.Application MyApp = null;
+                Excel.Worksheet MySheet = null;
+
+
+
+
+                MyApp = new Excel.Application();
+                MyApp.Visible = false;
+                MyBook = MyApp.Workbooks.Open("\\\\tweety.royall\\IS\\production\\Awareness and Perceptions Studies\\URP File request\\URP_INPUT_Schools_List.xlsx");
+                MySheet = (Excel.Worksheet)MyBook.Sheets[1]; // Explicit cast is not required here
+                int lastRow = MySheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell).Row;
+                for (int i = 2; i <= lastRow; i++)
+                {
+                    ((Excel.Range)MySheet.Rows[i]).Clear();
+                }
+
+                MyBook.Save();
+                MyBook.Close();
+
+
+                Dts.TaskResult = (int)ScriptResults.Success;
+            }
+
+            catch(Exception e)
+            {
+                Dts.Events.FireError(0, "ERROR", e.Message, null, 0);
+                Dts.TaskResult = (int)ScriptResults.Failure;
+
+            }
+		}
+
+        #region ScriptResults declaration
+        /// <summary>
+        /// This enum provides a convenient shorthand within the scope of this class for setting the
+        /// result of the script.
+        /// 
+        /// This code was generated automatically.
+        /// </summary>
+        enum ScriptResults
+        {
+            Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success,
+            Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+        };
+        #endregion
+
+	}
+}
