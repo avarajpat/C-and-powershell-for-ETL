@@ -1,0 +1,78 @@
+#region Help:  Introduction to the Script Component
+/*
+   The script component replaces [a-z]"[a-z] with [a-z][a-z] and "" with " 
+   The probem arises when a file has bad data in it of order of ,"7210"Stoneman Road" where it errors out due to inconsistent 
+   and faulty text qualifiers. 
+
+*/
+#endregion
+
+#region Namespaces
+using System;
+using System.Data;
+using Microsoft.SqlServer.Dts.Pipeline.Wrapper;
+using Microsoft.SqlServer.Dts.Runtime.Wrapper;
+using System.Text.RegularExpressions;
+#endregion
+
+/// <summary>
+/// This is the class to which to add your code.  Do not change the name, attributes, or parent
+/// of this class.
+/// </summary>
+[Microsoft.SqlServer.Dts.Pipeline.SSISScriptComponentEntryPointAttribute]
+public class ScriptMain : UserComponent
+{
+
+
+    public static string Bad_data_patttern = "([a-z]|[A-Z])+\"([a-z]|[A-Z])+";
+    public static string Bad_data_patttern2 = "\"\"";
+    public Regex objregexp = new Regex(Bad_data_patttern);
+    public Regex objregexp2 = new Regex(Bad_data_patttern2);
+
+    
+
+    public string RemoveQuotes(String message)
+    {
+        message = objregexp.Replace(message, new MatchEvaluator(replacement));
+        return message;
+
+    }
+
+
+    public string RemoveQuotes2(String message)
+    {
+        message = objregexp2.Replace(message,"\"");
+        return message;
+
+    }
+
+
+    string replacement(Match m)
+    {
+        string x = m.ToString();
+        return x.Replace("\"", "");
+    }
+
+
+    /// <summary>
+    /// This method is called once for every row that passes through the component from Input0.
+    ///
+    /// Example of reading a value from a column in the the row:
+    ///  string zipCode = Row.ZipCode
+    ///
+    /// Example of writing a value to a column in the row:
+    ///  Row.ZipCode = zipCode
+    /// </summary>
+    /// <param name="Row">The row that is currently passing through the component</param>
+    public override void Input0_ProcessInputRow(Input0Buffer Row)
+    {
+       
+
+        string a = RemoveQuotes(Row.DataColumn);
+        Row.DataColumn = RemoveQuotes2(a);
+
+
+    }
+
+}
+
