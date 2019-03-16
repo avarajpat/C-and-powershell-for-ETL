@@ -1,0 +1,77 @@
+/*
+ Check if File has been already locked by user . 
+ If locked alert the user with a Message box by caputring the exception in a try catch block.
+*/
+
+#region Namespaces
+using System;
+using System.Data;
+using Microsoft.SqlServer.Dts.Runtime;
+using System.Windows.Forms;
+using System.IO;
+
+#endregion
+
+namespace ST_6ebaf868f1b84e659358fa79ce620bc0
+{
+    
+    
+	[Microsoft.SqlServer.Dts.Tasks.ScriptTask.SSISScriptTaskEntryPointAttribute]
+	public partial class ScriptMain : Microsoft.SqlServer.Dts.Tasks.ScriptTask.VSTARTScriptObjectModelBase
+	{
+       
+		public void Main()
+		{
+            int locked = 0;
+            // TODO: Add your code here
+            FileStream fs = null;
+            string filepath = Dts.Variables["User::Full_file_name"].Value.ToString();
+
+            try
+            {
+
+                fs = File.Open(filepath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+
+            catch (IOException ex)
+            {
+                MessageBox.Show(ex.Message);
+                locked = 1;
+                MessageBox.Show("File is Open or Locked by a User\n" +ex.Message);
+
+
+            }
+
+
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(ex.Message);
+                locked = 1;
+                MessageBox.Show("File is Read Only . Please save a new version \n" + ex.Message);
+
+
+            }
+
+            finally
+            {
+                if (fs != null)
+                {
+
+                    fs.Close();
+                }
+
+            }
+            Dts.Variables["User::locked"].Value = locked;
+
+            Dts.TaskResult = (int)ScriptResults.Success;
+		}
+
+        enum ScriptResults
+        {
+            Success = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Success,
+            Failure = Microsoft.SqlServer.Dts.Runtime.DTSExecResult.Failure
+        };
+      
+
+	}
+}
