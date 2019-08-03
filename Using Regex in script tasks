@@ -15,10 +15,7 @@ using Microsoft.SqlServer.Dts.Runtime.Wrapper;
 using System.Text.RegularExpressions;
 #endregion
 
-/// <summary>
-/// This is the class to which to add your code.  Do not change the name, attributes, or parent
-/// of this class.
-/// </summary>
+
 [Microsoft.SqlServer.Dts.Pipeline.SSISScriptComponentEntryPointAttribute]
 public class ScriptMain : UserComponent
 {
