@@ -1,5 +1,5 @@
-# SSIS_C#-Scripts
-Various Advanced Projects in SSIS
+# C#-Powershell Scripts
+
 
 The first Script **"Using Regex in script tasks"** uses regex class libraries to replace a "dirty pattern within file" with cleaned version. 
 
